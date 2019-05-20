@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from book.models import AreaInfo
 
 # Create your views here.
 def index(request):
@@ -34,4 +35,30 @@ def login_check(request):
     else:
         return redirect('/login')
 
+def areas(request):
+    return render(request,'book/areas.html')
+
+def prov(request):
+    '''获取所有省级地区的信息'''
+    area = AreaInfo.objects.filter(area_parent__isnull=True)
+    area_list = []
+    for a in area:
+        area_list.append((a.id,a.area_name))
+    # 返回数据
+    return JsonResponse({'data':area_list})
+
+
+def city(request,prov_id):
+    area = AreaInfo.objects.filter(area_parent_id=prov_id)
+    area_list = []
+    for a in area:
+        area_list.append((a.id, a.area_name))
+    return JsonResponse({'data':area_list})
+#
+# def dis(request,city_id):
+#     area = AreaInfo.objects.filter(area_parent_id=city_id)
+#     area_list = []
+#     for a in area:
+#         area_list.append((a.id, a.area_name))
+#     return JsonResponse({'data':area_list})
 

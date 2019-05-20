@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>省市县</title>
+    <script type="text/javascript" src="/static/js/jquery-mini.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //发起一个ajax请求，获取所有省级地区信息
+            //ajax请求获取信息，使用get,涉及到信息更改使用post
+            $.get('/prov', function (data) {               
+                res = data.data
+                prov = $('#prov')
+                 $.each(res,function (index, item) {
+                     option_str = ' <option value="'+ item[0] +'">'+ item[1] +'</option>'
+                     prov.append(option_str)
+                 })
+            })   //发起一个ajax请求
+            //绑定prov下拉列表框的change事件，获取省下面的市的信息
+            $('#prov').change(function () {
+                //发起一个ajax请求，获取所有省下面市级地区信息
+                prov_id = $(this).val()
+                $.get('/city' + prov_id, function (data) {
+                    res = data.data
+                    city = $('#city')
+                    city.empty().append(' <option>----请选择市---</option>')
+                    dis = $('#dis')
+                    dis.empty().append('<option>----请选择县---</option>')
+                    $.each(res, function (index, item) {
+                        option_str = ' <option value="' + item[0] + '">' + item[1] + '</option>'
+                        city.append(option_str)
+                    })
+                })
+            })
+            $('#city').change(function () {
+                city_id = $(this).val()
+                $.get('/dis'+city_id,function (data) {
+                    res = data.data
+                    dis = $('#dis')
+                    dis.empty().append('<option>----请选择县---</option>')
+                    $.each(res,function (index,item) {
+                        option_str = ' <option value="' + item[0] + '">' + item[1] + '</option>'
+                        dis.append(option_str)
+                    })
+                })
+            })
+        })
+    </script>
+
+</head>
+<body>
+<select id="prov">
+    <option>----请选择省---</option>
+</select>
+<select id="city">
+    <option>----请选择市---</option>
+</select>
+<select id="dis">
+    <option>----请选择县---</option>
+</select>
+
+</body>
+</html>
